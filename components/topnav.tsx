@@ -56,7 +56,7 @@ export function TopNav() {
             ]}
             active={false}
           />
-          <button className="my-1.5 ml-1 flex items-center rounded bg-white px-2 text-nav">
+          <button className="my-1.5 ml-1 flex items-center rounded bg-white px-2 text-foreground">
             <PanelRightOpen className="h-4 w-4" />
           </button>
         </div>
@@ -80,7 +80,7 @@ function NavLink({
       className={cn(
         "flex items-center px-3.5 text-sm transition-colors",
         active
-          ? "bg-white font-semibold text-nav"
+          ? "bg-brand font-semibold text-white"
           : "text-white/90 hover:bg-nav-hover hover:text-white"
       )}
     >

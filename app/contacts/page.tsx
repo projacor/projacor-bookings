@@ -19,21 +19,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { ALL_TAGS } from "@/lib/types";
+import { ALL_TAGS, tagColor } from "@/lib/types";
 import { Avatar, Card } from "@/components/ui";
 import { cn } from "@/lib/utils";
-
-const TAG_COLORS: Record<string, string> = {
-  Artista: "#e0533d",
-  Promotor: "#2f6fb0",
-  Sala: "#8e44ad",
-  Câmara: "#2f9e6f",
-  Agente: "#c0392b",
-  Banda: "#e08b2f",
-  Gestão: "#111827",
-  Técnico: "#0f766e",
-  Cliente: "#d6492f",
-};
 
 type Kind = "all" | "person" | "company";
 
@@ -226,7 +214,7 @@ export default function ContactsPage() {
           </div>
           <div className="flex flex-wrap gap-1.5">
             {ALL_TAGS.map((t) => {
-              const color = TAG_COLORS[t] ?? "#6b7280";
+              const color = tagColor(t);
               const on = active.includes(t);
               return (
                 <button

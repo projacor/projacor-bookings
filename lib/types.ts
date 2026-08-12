@@ -120,3 +120,19 @@ export const ALL_TAGS = [
   "Técnico",
   "Cliente",
 ];
+
+export const TAG_COLORS: Record<string, string> = {
+  Artista: "#e0533d",
+  Promotor: "#2f6fb0",
+  Sala: "#8e44ad",
+  Câmara: "#2f9e6f",
+  Agente: "#c0392b",
+  Banda: "#e08b2f",
+  Gestão: "#111827",
+  Técnico: "#0f766e",
+  Cliente: "#d6492f",
+};
+
+export function tagColor(t: string) {
+  return TAG_COLORS[t] ?? "#6b7280";
+}

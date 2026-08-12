@@ -73,7 +73,12 @@ export default function BookingDetailPage() {
 
           <Section title="Promotor">
             {promoter ? (
-              <ContactLine name={promoter.name} org={promoter.company} email={promoter.email} />
+              <ContactLine
+                href={`/contacts/${promoter.id}`}
+                name={promoter.name}
+                org={promoter.company}
+                email={promoter.email}
+              />
             ) : (
               <SelectLink />
             )}
@@ -82,7 +87,9 @@ export default function BookingDetailPage() {
           <Section title="Sala">
             {venue ? (
               <div>
-                <div className="font-medium text-link">{venue.name}</div>
+                <Link href={`/contacts/${venue.id}`} className="font-medium text-link hover:underline">
+                  {venue.name}
+                </Link>
                 <div className="mt-0.5 flex items-center gap-1 text-sm text-muted">
                   <MapPin className="h-3.5 w-3.5" /> {b.venue}, {b.city}
                 </div>
@@ -197,10 +204,22 @@ function Section({
   );
 }
 
-function ContactLine({ name, org, email }: { name: string; org?: string; email: string }) {
+function ContactLine({
+  href,
+  name,
+  org,
+  email,
+}: {
+  href: string;
+  name: string;
+  org?: string;
+  email: string;
+}) {
   return (
     <div>
-      <div className="font-medium text-link">{name}</div>
+      <Link href={href} className="font-medium text-link hover:underline">
+        {name}
+      </Link>
       <div className="text-sm text-muted">{org}</div>
       <div className="text-sm text-muted">{email}</div>
     </div>

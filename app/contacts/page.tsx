@@ -66,7 +66,12 @@ export default function ContactsPage() {
                 <Avatar name={c.name} color={c.color} size={40} square={c.kind === "company"} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-medium text-link">{c.name}</span>
+                    <Link
+                      href={`/contacts/${c.id}`}
+                      className="truncate font-medium text-link hover:underline"
+                    >
+                      {c.name}
+                    </Link>
                     {c.kind === "company" && (
                       <span className="rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted">Empresa</span>
                     )}

@@ -3,9 +3,9 @@
 :root {
   /* Estrutura clonada do Overture — cores adaptadas à Projaçor */
   --header: #1b1c21;        /* barra de topo quase preta */
-  --nav: #d6492f;           /* barra de navegação — cor de marca (coral) */
-  --nav-dark: #bf3f28;
-  --nav-hover: #c33f28;
+  --nav: #2e3238;           /* barra de navegação — cinza escuro */
+  --nav-dark: #24272c;
+  --nav-hover: #3a3f47;
   --nav-active: #ffffff;    /* separador ativo */
 
   --background: #e9eaed;    /* fundo cinzento claro */

@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  /* Estrutura clonada do Overture — cores adaptadas à Projaçor */
+  --header: #1b1c21;        /* barra de topo quase preta */
+  --nav: #d6492f;           /* barra de navegação — cor de marca (coral) */
+  --nav-dark: #bf3f28;
+  --nav-hover: #c33f28;
+  --nav-active: #ffffff;    /* separador ativo */
+
+  --background: #e9eaed;    /* fundo cinzento claro */
+  --surface: #ffffff;
+  --surface-2: #f3f4f6;
+  --border: #dcdfe4;
+  --foreground: #1c1e24;
+  --muted: #6b7280;
+
+  --brand: #d6492f;
+  --brand-dark: #bf3f28;
+  --link: #2f6fb0;          /* ligações (azul, como no Overture) */
+  --link-dark: #245a91;
+  --green: #3a9d5d;         /* ações secundárias (verde) */
+  --green-dark: #33894f;
+}
+
+@theme inline {
+  --color-header: var(--header);
+  --color-nav: var(--nav);
+  --color-nav-dark: var(--nav-dark);
+  --color-nav-hover: var(--nav-hover);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-link: var(--link);
+  --color-link-dark: var(--link-dark);
+  --color-green: var(--green);
+  --color-green-dark: var(--green-dark);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c2c6cd;
+  border-radius: 6px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a9aeb7;
+}

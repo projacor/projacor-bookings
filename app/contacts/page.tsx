@@ -165,6 +165,12 @@ export default function ContactsPage() {
                   <span className="text-muted">Email: </span>
                   <a href={`mailto:${c.email}`} className="text-link hover:underline">{c.email}</a>
                 </div>
+                {c.mobile && (
+                  <div className="text-sm">
+                    <span className="text-muted">Tel: </span>
+                    <a href={`tel:${c.mobile}`} className="text-link hover:underline">{c.mobile}</a>
+                  </div>
+                )}
               </div>
               {/* Foto à direita */}
               <Avatar name={c.name} color={c.color} size={56} square />

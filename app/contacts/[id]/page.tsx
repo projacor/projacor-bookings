@@ -105,6 +105,12 @@ export default function ContactDetailPage() {
                     <span className="font-semibold">Email:</span>{" "}
                     <a href={`mailto:${c.email}`} className="text-link hover:underline">{c.email}</a>
                   </div>
+                  {c.mobile && (
+                    <div className="mt-1 text-sm">
+                      <span className="font-semibold">Telefone:</span>{" "}
+                      <a href={`tel:${c.mobile}`} className="text-link hover:underline">{c.mobile}</a>
+                    </div>
+                  )}
                   {(c.city || c.region) && (
                     <div className="mt-1 flex items-center gap-1 text-sm text-link">
                       <MapPin className="h-4 w-4" />

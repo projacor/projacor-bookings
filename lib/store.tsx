@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -29,6 +30,7 @@ interface Store {
   bookings: Booking[];
   tasks: Task[];
   docs: Doc[];
+  persistent: boolean;
   addBooking: (b: Omit<Booking, "id">) => void;
   setBookingStatus: (id: string, status: BookingStatus) => void;
   addContact: (c: Omit<Contact, "id">) => void;
@@ -42,15 +44,33 @@ interface Store {
 
 const StoreContext = createContext<Store | null>(null);
 
-let counter = 500;
-const nextId = (p: string) => `${p}${counter++}`;
+const genId = (p: string) => p + Math.random().toString(36).slice(2, 9);
+const post = (url: string, body: unknown) =>
+  fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch(() => {});
+const patchReq = (url: string, body: unknown) =>
+  fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).catch(() => {});
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [artists] = useState<Artist[]>(seedArtists);
+  const [artists, setArtists] = useState<Artist[]>(seedArtists);
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
   const [bookings, setBookings] = useState<Booking[]>(seedBookings);
   const [tasks, setTasks] = useState<Task[]>(seedTasks);
-  const [docs] = useState<Doc[]>(seedDocs);
+  const [docs, setDocs] = useState<Doc[]>(seedDocs);
+  const [persistent, setPersistent] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/bootstrap")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.artists) setArtists(d.artists);
+        if (d.docs) setDocs(d.docs);
+        if (d.contacts) setContacts(d.contacts);
+        if (d.bookings) setBookings(d.bookings);
+        if (d.tasks) setTasks(d.tasks);
+        setPersistent(!!d.persistent);
+      })
+      .catch(() => {});
+  }, []);
 
   const value = useMemo<Store>(
     () => ({
@@ -59,28 +79,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       bookings,
       tasks,
       docs,
-      addBooking: (b) =>
-        setBookings((prev) => [{ ...b, id: nextId("") }, ...prev]),
-      setBookingStatus: (id, status) =>
-        setBookings((prev) =>
-          prev.map((b) => (b.id === id ? { ...b, status } : b))
-        ),
-      addContact: (c) =>
-        setContacts((prev) => [{ ...c, id: nextId("p") }, ...prev]),
-      updateContact: (id, patch) =>
-        setContacts((prev) =>
-          prev.map((c) => (c.id === id ? { ...c, ...patch } : c))
-        ),
-      addTask: (t) => setTasks((prev) => [{ ...t, id: nextId("t") }, ...prev]),
-      toggleTask: (id) =>
-        setTasks((prev) =>
-          prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-        ),
+      persistent,
+      addBooking: (b) => {
+        const full = { ...b, id: genId("") } as Booking;
+        setBookings((prev) => [full, ...prev]);
+        post("/api/bookings", full);
+      },
+      setBookingStatus: (id, status) => {
+        setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, status } : b)));
+        patchReq(`/api/bookings/${id}`, { status });
+      },
+      addContact: (c) => {
+        const full = { ...c, id: genId("p") } as Contact;
+        setContacts((prev) => [full, ...prev]);
+        post("/api/contacts", full);
+      },
+      updateContact: (id, patch) => {
+        setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+        patchReq(`/api/contacts/${id}`, patch);
+      },
+      addTask: (t) => {
+        const full = { ...t, id: genId("t") } as Task;
+        setTasks((prev) => [full, ...prev]);
+        post("/api/tasks", full);
+      },
+      toggleTask: (id) => {
+        const current = tasks.find((t) => t.id === id);
+        const done = current ? !current.done : true;
+        setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done } : t)));
+        patchReq(`/api/tasks/${id}`, { done });
+      },
       artistById: (id) => artists.find((a) => a.id === id),
       contactById: (id) => (id ? contacts.find((c) => c.id === id) : undefined),
       bookingById: (id) => bookings.find((b) => b.id === id),
     }),
-    [artists, contacts, bookings, tasks, docs]
+    [artists, contacts, bookings, tasks, docs, persistent]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

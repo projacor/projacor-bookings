@@ -29,18 +29,17 @@ import { ALL_TAGS, tagColor } from "@/lib/types";
 import type { Contact } from "@/lib/types";
 import { Avatar, StatusBadge } from "@/components/ui";
 
-type Note = { id: string; date: string; author: string; text: string };
 type Tab = "all" | "bookings" | "contracts";
 
 export default function ContactDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { contactById, bookings, artistById, tasks, updateContact, addTask, toggleTask } = useStore();
+  const {
+    contactById, bookings, artistById, tasks, notes: allNotes,
+    updateContact, addTask, toggleTask, addNote, deleteNote,
+  } = useStore();
   const c = contactById(id);
 
   const [draft, setDraft] = useState("");
-  const [notes, setNotes] = useState<Note[]>([
-    { id: "n1", date: "2026-07-02", author: "Ben Jones", text: "Sugeriu o Big Band para o festival de verão." },
-  ]);
   const [tab, setTab] = useState<Tab>("all");
   const [showTags, setShowTags] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -63,6 +62,9 @@ export default function ContactDetailPage() {
     : related;
 
   const contactTasks = tasks.filter((t) => t.contactId === c.id);
+  const contactNotes = allNotes
+    .filter((n) => n.contactId === c.id)
+    .sort((a, b) => b.date.localeCompare(a.date));
   const availableTags = ALL_TAGS.filter((t) => !c.tags.includes(t));
 
   const onAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,9 +76,9 @@ export default function ContactDetailPage() {
       /* ignora ficheiros inválidos */
     }
   };
-  const addNote = () => {
+  const submitNote = () => {
     if (!draft.trim()) return;
-    setNotes((n) => [{ id: `n${n.length + 2}`, date: "2026-08-13", author: "Ben Jones", text: draft.trim() }, ...n]);
+    addNote(c.id, draft.trim());
     setDraft("");
   };
 
@@ -186,15 +188,14 @@ export default function ContactDetailPage() {
               className="min-h-[110px] w-full resize-y rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-link focus:ring-2 focus:ring-link/20"
               placeholder="Escreve uma nota…"
             />
-            <div className="mt-3 flex items-center justify-between">
-              <button className="text-sm text-link hover:underline">Mais opções</button>
-              <button onClick={addNote} className="rounded-md bg-link px-4 py-2 text-sm font-medium text-white hover:bg-link-dark">
+            <div className="mt-3 flex items-center justify-end">
+              <button onClick={submitNote} className="rounded-md bg-link px-4 py-2 text-sm font-medium text-white hover:bg-link-dark">
                 Adicionar nota
               </button>
             </div>
-            {notes.length > 0 && (
+            {contactNotes.length > 0 && (
               <div className="mt-5 divide-y divide-border border-t border-border">
-                {notes.map((n) => (
+                {contactNotes.map((n) => (
                   <div key={n.id} className="py-3">
                     <div className="flex items-center justify-between">
                       <div className="text-sm">
@@ -202,8 +203,7 @@ export default function ContactDetailPage() {
                         <span className="text-link">Nota por {n.author}</span>
                       </div>
                       <div className="flex gap-1 text-muted">
-                        <button className="rounded border border-border p-1 hover:bg-surface-2"><Pencil className="h-3.5 w-3.5" /></button>
-                        <button onClick={() => setNotes((x) => x.filter((y) => y.id !== n.id))} className="rounded border border-border p-1 hover:bg-surface-2">
+                        <button onClick={() => deleteNote(n.id)} className="rounded border border-border p-1 hover:bg-surface-2">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>

@@ -21,6 +21,7 @@ import type {
   BookingStatus,
   Contact,
   Doc,
+  Note,
   Task,
 } from "./types";
 
@@ -30,6 +31,7 @@ interface Store {
   bookings: Booking[];
   tasks: Task[];
   docs: Doc[];
+  notes: Note[];
   persistent: boolean;
   addBooking: (b: Omit<Booking, "id">) => void;
   setBookingStatus: (id: string, status: BookingStatus) => void;
@@ -38,6 +40,8 @@ interface Store {
   deleteContacts: (ids: string[]) => void;
   addTask: (t: Omit<Task, "id">) => void;
   toggleTask: (id: string) => void;
+  addNote: (contactId: string, text: string) => void;
+  deleteNote: (id: string) => void;
   artistById: (id: string) => Artist | undefined;
   contactById: (id?: string) => Contact | undefined;
   bookingById: (id: string) => Booking | undefined;
@@ -57,6 +61,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [bookings, setBookings] = useState<Booking[]>(seedBookings);
   const [tasks, setTasks] = useState<Task[]>(seedTasks);
   const [docs, setDocs] = useState<Doc[]>(seedDocs);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [persistent, setPersistent] = useState(false);
 
   useEffect(() => {
@@ -68,6 +73,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (d.contacts) setContacts(d.contacts);
         if (d.bookings) setBookings(d.bookings);
         if (d.tasks) setTasks(d.tasks);
+        if (d.notes) setNotes(d.notes);
         setPersistent(!!d.persistent);
       })
       .catch(() => {});
@@ -80,6 +86,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       bookings,
       tasks,
       docs,
+      notes,
       persistent,
       addBooking: (b) => {
         const full = { ...b, id: genId("") } as Booking;
@@ -116,11 +123,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done } : t)));
         patchReq(`/api/tasks/${id}`, { done });
       },
+      addNote: (contactId, text) => {
+        const note: Note = {
+          id: genId("n"),
+          contactId,
+          date: new Date().toISOString().slice(0, 10),
+          author: "Ben Jones",
+          text,
+        };
+        setNotes((prev) => [note, ...prev]);
+        post("/api/notes", note);
+      },
+      deleteNote: (id) => {
+        setNotes((prev) => prev.filter((n) => n.id !== id));
+        fetch(`/api/notes/${id}`, { method: "DELETE" }).catch(() => {});
+      },
       artistById: (id) => artists.find((a) => a.id === id),
       contactById: (id) => (id ? contacts.find((c) => c.id === id) : undefined),
       bookingById: (id) => bookings.find((b) => b.id === id),
     }),
-    [artists, contacts, bookings, tasks, docs, persistent]
+    [artists, contacts, bookings, tasks, docs, notes, persistent]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hasDb, ensureSchema, getContacts, getBookings, getTasks } from "@/lib/db";
+import { hasDb, ensureSchema, getContacts, getBookings, getTasks, getNotes } from "@/lib/db";
 import {
   artists,
   docs,
@@ -22,16 +22,18 @@ export async function GET() {
       contacts: seedContacts,
       bookings: seedBookings,
       tasks: seedTasks,
+      notes: [],
     });
   }
   try {
     await ensureSchema();
-    const [contacts, bookings, tasks] = await Promise.all([
+    const [contacts, bookings, tasks, notes] = await Promise.all([
       getContacts(),
       getBookings(),
       getTasks(),
+      getNotes(),
     ]);
-    return NextResponse.json({ persistent: true, dbConfigured: true, artists, docs, contacts, bookings, tasks });
+    return NextResponse.json({ persistent: true, dbConfigured: true, artists, docs, contacts, bookings, tasks, notes });
   } catch (e) {
     return NextResponse.json({
       persistent: false,
@@ -42,6 +44,7 @@ export async function GET() {
       contacts: seedContacts,
       bookings: seedBookings,
       tasks: seedTasks,
+      notes: [],
     });
   }
 }

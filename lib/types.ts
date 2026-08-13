@@ -95,6 +95,14 @@ export interface Task {
   priority: "baixa" | "media" | "alta";
 }
 
+export interface Note {
+  id: string;
+  contactId: string;
+  date: string;
+  author: string;
+  text: string;
+}
+
 export type MediaKind = "image" | "youtube" | "audio";
 
 export interface MediaItem {

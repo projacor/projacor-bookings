@@ -4,7 +4,7 @@ import {
   bookings as seedBookings,
   tasks as seedTasks,
 } from "./data";
-import type { Booking, Contact, Task } from "./types";
+import type { Booking, Contact, Note, Task } from "./types";
 
 // Persistência opcional: só ativa quando existe DATABASE_URL (Railway Postgres).
 // Sem base de dados, a app funciona na mesma (dados de demonstração em memória).
@@ -46,6 +46,9 @@ async function init() {
   await p.query(`CREATE TABLE IF NOT EXISTS tasks (
     id text PRIMARY KEY, title text, due text, done boolean, assignee text,
     booking_id text, contact_id text, priority text
+  )`);
+  await p.query(`CREATE TABLE IF NOT EXISTS notes (
+    id text PRIMARY KEY, contact_id text, date text, author text, text text
   )`);
   await p.query(`CREATE TABLE IF NOT EXISTS app_meta (key text PRIMARY KEY, value text)`);
 
@@ -190,4 +193,30 @@ export async function setTaskDone(id: string, done: boolean) {
 
 export async function deleteContact(id: string) {
   await getPool().query("DELETE FROM contacts WHERE id = $1", [id]);
+}
+
+/* ---------- notas ---------- */
+
+function toNote(r: Record<string, unknown>): Note {
+  return {
+    id: r.id as string,
+    contactId: r.contact_id as string,
+    date: r.date as string,
+    author: r.author as string,
+    text: r.text as string,
+  };
+}
+export async function getNotes() {
+  const { rows } = await getPool().query("SELECT * FROM notes ORDER BY date DESC");
+  return rows.map(toNote);
+}
+export async function insertNote(n: Note) {
+  await getPool().query(
+    `INSERT INTO notes (id, contact_id, date, author, text)
+     VALUES ($1,$2,$3,$4,$5) ON CONFLICT (id) DO NOTHING`,
+    [n.id, n.contactId, n.date, n.author, n.text]
+  );
+}
+export async function deleteNote(id: string) {
+  await getPool().query("DELETE FROM notes WHERE id = $1", [id]);
 }

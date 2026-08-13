@@ -220,3 +220,20 @@ export async function insertNote(n: Note) {
 export async function deleteNote(id: string) {
   await getPool().query("DELETE FROM notes WHERE id = $1", [id]);
 }
+
+/* ---------- diagnóstico ---------- */
+
+export async function getSeeded() {
+  const { rows } = await getPool().query(
+    "SELECT value FROM app_meta WHERE key = 'seeded'"
+  );
+  return rows.length > 0;
+}
+
+export function dbHost() {
+  try {
+    return new URL(process.env.DATABASE_URL!).host;
+  } catch {
+    return null;
+  }
+}

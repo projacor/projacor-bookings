@@ -176,3 +176,7 @@ export async function setBookingStatus(id: string, status: string) {
 export async function setTaskDone(id: string, done: boolean) {
   await getPool().query("UPDATE tasks SET done = $1 WHERE id = $2", [done, id]);
 }
+
+export async function deleteContact(id: string) {
+  await getPool().query("DELETE FROM contacts WHERE id = $1", [id]);
+}

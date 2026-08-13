@@ -35,6 +35,7 @@ interface Store {
   setBookingStatus: (id: string, status: BookingStatus) => void;
   addContact: (c: Omit<Contact, "id">) => void;
   updateContact: (id: string, patch: Partial<Contact>) => void;
+  deleteContacts: (ids: string[]) => void;
   addTask: (t: Omit<Task, "id">) => void;
   toggleTask: (id: string) => void;
   artistById: (id: string) => Artist | undefined;
@@ -97,6 +98,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateContact: (id, patch) => {
         setContacts((prev) => prev.map((c) => (c.id === id ? { ...c, ...patch } : c)));
         patchReq(`/api/contacts/${id}`, patch);
+      },
+      deleteContacts: (ids) => {
+        setContacts((prev) => prev.filter((c) => !ids.includes(c.id)));
+        ids.forEach((id) =>
+          fetch(`/api/contacts/${id}`, { method: "DELETE" }).catch(() => {})
+        );
       },
       addTask: (t) => {
         const full = { ...t, id: genId("t") } as Task;

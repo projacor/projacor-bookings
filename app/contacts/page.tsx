@@ -17,6 +17,7 @@ import {
   Users,
   FileText,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ALL_TAGS, tagColor } from "@/lib/types";
@@ -26,7 +27,7 @@ import { cn } from "@/lib/utils";
 type Kind = "all" | "person" | "company";
 
 export default function ContactsPage() {
-  const { contacts } = useStore();
+  const { contacts, deleteContacts } = useStore();
   const [q, setQ] = useState("");
   const [kind, setKind] = useState<Kind>("all");
   const [active, setActive] = useState<string[]>([]);
@@ -127,6 +128,19 @@ export default function ContactsPage() {
           <button className="inline-flex items-center gap-1.5 text-muted hover:text-foreground">
             <Tag className="h-4 w-4" /> Adicionar etiqueta
           </button>
+          {selected.length > 0 && (
+            <button
+              onClick={() => {
+                if (confirm(`Apagar ${selected.length} contacto(s)? Esta ação não pode ser anulada.`)) {
+                  deleteContacts(selected);
+                  setSelected([]);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 font-medium text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="h-4 w-4" /> Apagar contactos
+            </button>
+          )}
           {selected.length > 0 && (
             <span className="ml-auto text-xs text-muted">{selected.length} selecionados</span>
           )}

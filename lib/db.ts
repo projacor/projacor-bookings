@@ -47,13 +47,24 @@ async function init() {
     id text PRIMARY KEY, title text, due text, done boolean, assignee text,
     booking_id text, contact_id text, priority text
   )`);
+  await p.query(`CREATE TABLE IF NOT EXISTS app_meta (key text PRIMARY KEY, value text)`);
 
-  const { rows: cc } = await p.query("SELECT COUNT(*)::int AS n FROM contacts");
-  if (cc[0].n === 0) for (const c of seedContacts) await insertContact(c);
-  const { rows: bc } = await p.query("SELECT COUNT(*)::int AS n FROM bookings");
-  if (bc[0].n === 0) for (const b of seedBookings) await insertBooking(b);
-  const { rows: tc } = await p.query("SELECT COUNT(*)::int AS n FROM tasks");
-  if (tc[0].n === 0) for (const t of seedTasks) await insertTask(t);
+  // Semear APENAS uma vez na vida da base de dados. Depois disto, nenhum
+  // arranque/deploy volta a inserir dados de demonstração nem a mexer no
+  // conteúdo — os dados do utilizador ficam intactos.
+  const seeded = await p.query("SELECT 1 FROM app_meta WHERE key = 'seeded'");
+  if (seeded.rows.length === 0) {
+    const { rows } = await p.query("SELECT COUNT(*)::int AS n FROM contacts");
+    // só insere demonstração numa base de dados verdadeiramente vazia
+    if (rows[0].n === 0) {
+      for (const c of seedContacts) await insertContact(c);
+      for (const b of seedBookings) await insertBooking(b);
+      for (const t of seedTasks) await insertTask(t);
+    }
+    await p.query(
+      "INSERT INTO app_meta (key, value) VALUES ('seeded', '1') ON CONFLICT DO NOTHING"
+    );
+  }
 }
 
 /* ---------- mapeamento linha <-> objeto ---------- */

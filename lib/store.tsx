@@ -32,6 +32,8 @@ interface Store {
   addBooking: (b: Omit<Booking, "id">) => void;
   setBookingStatus: (id: string, status: BookingStatus) => void;
   addContact: (c: Omit<Contact, "id">) => void;
+  updateContact: (id: string, patch: Partial<Contact>) => void;
+  addTask: (t: Omit<Task, "id">) => void;
   toggleTask: (id: string) => void;
   artistById: (id: string) => Artist | undefined;
   contactById: (id?: string) => Contact | undefined;
@@ -65,6 +67,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ),
       addContact: (c) =>
         setContacts((prev) => [{ ...c, id: nextId("p") }, ...prev]),
+      updateContact: (id, patch) =>
+        setContacts((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, ...patch } : c))
+        ),
+      addTask: (t) => setTasks((prev) => [{ ...t, id: nextId("t") }, ...prev]),
       toggleTask: (id) =>
         setTasks((prev) =>
           prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))

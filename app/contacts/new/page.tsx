@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { HelpCircle, User } from "lucide-react";
+import { HelpCircle, User, Upload } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ALL_TAGS, tagColor } from "@/lib/types";
 import { Card } from "@/components/ui";
@@ -25,10 +25,19 @@ export default function NewPersonPage() {
     region: "",
   });
   const [tags, setTags] = useState<string[]>([]);
+  const [avatar, setAvatar] = useState<string>("");
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const toggleTag = (t: string) =>
     setTags((a) => (a.includes(t) ? a.filter((x) => x !== t) : [...a, t]));
+
+  const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatar(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const save = () => {
     const name = `${form.first} ${form.surname}`.trim();
@@ -44,6 +53,7 @@ export default function NewPersonPage() {
       region: form.region || undefined,
       tags,
       color: COLORS[name.length % COLORS.length],
+      avatar: avatar || undefined,
     });
     router.push("/contacts");
   };
@@ -56,10 +66,25 @@ export default function NewPersonPage() {
       <Card className="overflow-hidden">
         {/* Cabeçalho */}
         <div className="flex items-center gap-4 bg-surface-2/70 px-6 py-5">
-          <div className="flex h-16 w-16 items-center justify-center rounded-md border border-border bg-surface text-muted">
-            <User className="h-8 w-8" />
+          <label
+            title="Carregar avatar"
+            className="group relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-md border border-border bg-surface text-muted hover:border-link"
+          >
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatar} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              <User className="h-8 w-8" />
+            )}
+            <span className="absolute inset-0 hidden items-center justify-center bg-black/40 text-[10px] font-medium text-white group-hover:flex">
+              <Upload className="h-4 w-4" />
+            </span>
+            <input type="file" accept="image/*" onChange={onAvatar} className="hidden" />
+          </label>
+          <div>
+            <h1 className="text-xl font-semibold">Adicionar nova pessoa</h1>
+            <p className="text-xs text-muted">Clica na imagem para carregar um avatar.</p>
           </div>
-          <h1 className="text-xl font-semibold">Adicionar nova pessoa</h1>
         </div>
 
         {/* Nome */}

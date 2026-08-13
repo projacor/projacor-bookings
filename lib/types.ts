@@ -55,6 +55,7 @@ export interface Contact {
   region?: string;
   tags: string[];
   color: string;
+  avatar?: string; // data URL da imagem
 }
 
 export interface Artist {
@@ -90,6 +91,7 @@ export interface Task {
   done: boolean;
   assignee: string;
   bookingId?: string;
+  contactId?: string;
   priority: "baixa" | "media" | "alta";
 }
 

@@ -173,7 +173,7 @@ export default function ContactsPage() {
                 )}
               </div>
               {/* Foto à direita */}
-              <Avatar name={c.name} color={c.color} size={56} square />
+              <Avatar name={c.name} color={c.color} size={56} square avatar={c.avatar} />
             </div>
           ))}
           {rows.length === 0 && (

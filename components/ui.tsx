@@ -79,12 +79,25 @@ export function Avatar({
   color,
   size = 36,
   square = false,
+  avatar,
 }: {
   name: string;
   color?: string;
   size?: number;
   square?: boolean;
+  avatar?: string;
 }) {
+  if (avatar) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={avatar}
+        alt={name}
+        className={cn("shrink-0 object-cover", square ? "rounded-md" : "rounded-full")}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <div
       className={cn(

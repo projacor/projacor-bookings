@@ -16,7 +16,6 @@ import {
   Trash2,
   Image as ImageIcon,
   Mail,
-  Info,
   Send,
   CheckSquare,
   Check,
@@ -246,9 +245,7 @@ export default function ContactDetailPage() {
           <div className="overflow-hidden rounded-md border border-border bg-surface">
             <SideLink icon={<ImageIcon className="h-4 w-4" />} label="Ver página de media" href="/docs" />
             <SideLink icon={<Mail className="h-4 w-4" />} label="Definições de email deste contacto" />
-            <SideLink icon={<Send className="h-4 w-4" />} label="Origem: Nenhuma" />
-            <SideLink icon={<Info className="h-4 w-4" />} label="Ver mais informação" />
-            <SideLink icon={<Send className="h-4 w-4" />} label="Enviar pedido de atualização" last />
+            <SideLink icon={<Send className="h-4 w-4" />} label="Origem: Nenhuma" last />
           </div>
 
           {/* Próximos bookings */}

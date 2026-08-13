@@ -52,6 +52,7 @@ export interface Contact {
   email: string;
   mobile?: string;
   city?: string;
+  region?: string;
   tags: string[];
   color: string;
 }

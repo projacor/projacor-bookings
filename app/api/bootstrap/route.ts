@@ -15,6 +15,8 @@ export async function GET() {
   if (!hasDb) {
     return NextResponse.json({
       persistent: false,
+      dbConfigured: false,
+      hint: "DATABASE_URL não está definida no serviço da app.",
       artists,
       docs,
       contacts: seedContacts,
@@ -29,10 +31,11 @@ export async function GET() {
       getBookings(),
       getTasks(),
     ]);
-    return NextResponse.json({ persistent: true, artists, docs, contacts, bookings, tasks });
+    return NextResponse.json({ persistent: true, dbConfigured: true, artists, docs, contacts, bookings, tasks });
   } catch (e) {
     return NextResponse.json({
       persistent: false,
+      dbConfigured: true,
       error: String(e),
       artists,
       docs,

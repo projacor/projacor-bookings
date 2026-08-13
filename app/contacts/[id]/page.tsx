@@ -23,6 +23,7 @@ import {
   Calendar as CalIcon,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
+import { fileToAvatar } from "@/lib/image";
 import { initials } from "@/lib/utils";
 import { ALL_TAGS, tagColor } from "@/lib/types";
 import type { Contact } from "@/lib/types";
@@ -64,12 +65,14 @@ export default function ContactDetailPage() {
   const contactTasks = tasks.filter((t) => t.contactId === c.id);
   const availableTags = ALL_TAGS.filter((t) => !c.tags.includes(t));
 
-  const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => updateContact(c.id, { avatar: reader.result as string });
-    reader.readAsDataURL(file);
+    try {
+      updateContact(c.id, { avatar: await fileToAvatar(file) });
+    } catch {
+      /* ignora ficheiros inválidos */
+    }
   };
   const addNote = () => {
     if (!draft.trim()) return;

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { HelpCircle, User, Upload } from "lucide-react";
 import { useStore } from "@/lib/store";
+import { fileToAvatar } from "@/lib/image";
 import { ALL_TAGS, tagColor } from "@/lib/types";
 import { Card } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -31,12 +32,14 @@ export default function NewPersonPage() {
   const toggleTag = (t: string) =>
     setTags((a) => (a.includes(t) ? a.filter((x) => x !== t) : [...a, t]));
 
-  const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setAvatar(reader.result as string);
-    reader.readAsDataURL(file);
+    try {
+      setAvatar(await fileToAvatar(file));
+    } catch {
+      /* ignora ficheiros inválidos */
+    }
   };
 
   const save = () => {
